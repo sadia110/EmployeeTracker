@@ -113,7 +113,71 @@ if( response.action=="department" ){
         mainApp()
     }
 }
+if( response.action=="role"){
+    
+    let roleList = await db.query( "SELECT * FROM role" )
+    console.table( roleList )
 
+    response = await inquirer.prompt([
+        {   
+            message:"What do you want to do now?",  
+            type:"list", 
+            name:"action", 
+        choices:[
+            {   
+                 name: "Add a role", 
+                 value: "add" 
+            },
+            {   
+                name: "Remove a role", 
+                value: "remove" 
+            },
+            {   
+                name: "Return to main menu", 
+                value: "return" 
+            }
+        ]}
+    ])
+// to add new role
+if( response.action == "add" ){
+    const dbDepartment = await db.query( "SELECT * FROM department")
+    department = []
+    dbDepartment.forEach( (item) => {
+        department.push( { name: item.name, value: item.id } )
+    })
+
+    response = await inquirer.prompt([
+        {   
+            message: "Enter new roole", 
+            type:"input", 
+            name:"name" 
+        },
+        {   
+            message: "Enter salary for new role", 
+            type:"input",   
+            name:"salary" 
+        },
+        {   
+            message: "Enter dept fornew role",
+            type:"list", 
+            name:"department",
+            choices: department},
+    ]) 
+
+    // to save to DB
+    let newRole = await db.query( "INSERT INTO role VALUES( ?, ?, ?, ?)", 
+    [ 0, response.name, response.salary, response.department ] )
+    
+    console.log( `Role ${response.name} has been added to database.`)
+    mainApp()
+}
+
+
+if( response.action=="return" ){
+    console.log( `Returning to the main menu...`)
+    mainApp()
+}
+}
 
 
 
