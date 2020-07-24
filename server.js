@@ -222,8 +222,32 @@ async function mainApp(){
             ] 
         }
     ])        
+  
+    if( response.action=="update"){
+        let employeeNames = []
+        employeeList.forEach( (item) =>{
+            employeeNames.push( { name:item.employeeName, value:item.id } )
+        })
 
+        const dbRole = await db.query( "SELECT * FROM role")
+        role = []
+        dbRole.forEach( (item) => {
+            role.push( { name: item.title, value: item.id } )
+        })
 
+        response = await inquirer.prompt([
+            {   
+                
+            },
+            {  
+            },
+        ])
+
+       let newRole = await db.query( "INSERT INTO role VALUES( ?, ?, ?, ?)", 
+    [ 0, response.name, response.salary, response.dept ] )
+    
+    console.log( `Role ${response.name} has been added to database.`)
+    mainApp()
 
 
 
