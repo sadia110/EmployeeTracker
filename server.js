@@ -66,6 +66,59 @@ async function mainApp(){
                 } ] }
     ])
 
+// DEPT
+if( response.action=="department" ){
+    let departmentList = await db.query( "SELECT * FROM department" )
+    console.table( departmentList )
+
+    response = await inquirer.prompt([
+        {   
+            message:"What do you want to do now?", 
+            type:"list", 
+            name:"action", 
+        choices:[
+            {   
+                name: "Add a department", 
+                value: "add" 
+            },
+            {   
+                name: "Return to main menu", 
+                value: "return" 
+            }
+        ]}
+    ])
+
+    // to add new dept
+    if( response.action == "add" ){
+        response = await inquirer.prompt([
+            {   
+                message: "Enter department name", 
+                type:"input", 
+                name:"createDep" 
+            }
+        ]) 
+
+        // to save to DB
+    
+        let newDep = await db.query( "INSERT INTO department VALUES( ?,? ) ", 
+        [ 0, response.createDep ] )
+        
+        console.log( `Department ${response.createDep} has been added to database.`)
+        mainApp()
+    }
+
+
+    if( response.action=="return" ){
+        console.log( `Returning to the main menu...`)
+        mainApp()
+    }
+}
+
+
+
+
+
+
 async function mainApp(){ 
 
     let employeeList = await db.query( "SELECT * FROM employee" ) 
