@@ -41,10 +41,13 @@ const db = new Database ({
 
 
 
+// -----
 
 let response
-let role, department
+let role, department 
 
+
+// MAIN MENU 
 async function mainApp(){
     response = await inquirer.prompt([
         {       
@@ -67,237 +70,239 @@ async function mainApp(){
     ])
 
 // DEPT
-if( response.action=="department" ){
-    let departmentList = await db.query( "SELECT * FROM department" )
-    console.table( departmentList )
+    if( response.action=="department" ){
+        let departmentList = await db.query( "SELECT * FROM department" )
+        console.table( departmentList )
 
-    response = await inquirer.prompt([
-        {   
-            message:"What do you want to do now?", 
-            type:"list", 
-            name:"action", 
-        choices:[
-            {   
-                name: "Add a department", 
-                value: "add" 
-            },
-            {   
-                name: "Return to main menu", 
-                value: "return" 
-            }
-        ]}
-    ])
-
-    // to add new dept
-    if( response.action == "add" ){
         response = await inquirer.prompt([
             {   
-                message: "Enter department name", 
-                type:"input", 
-                name:"createDep" 
-            }
-        ]) 
-
-        // to save to DB
-    
-        let newDep = await db.query( "INSERT INTO department VALUES( ?,? ) ", 
-        [ 0, response.createDep ] )
-        
-        console.log( `Department ${response.createDep} has been added to database.`)
-        mainApp()
-    }
-
-
-    if( response.action=="return" ){
-        console.log( `Returning to the main menu...`)
-        mainApp()
-    }
-}
-if( response.action=="role"){
-    
-    let roleList = await db.query( "SELECT * FROM role" )
-    console.table( roleList )
-
-    response = await inquirer.prompt([
-        {   
-            message:"What do you want to do now?",  
-            type:"list", 
-            name:"action", 
-        choices:[
-            {   
-                 name: "Add a role", 
-                 value: "add" 
-            },
-            {   
-                name: "Remove a role", 
-                value: "remove" 
-            },
-            {   
-                name: "Return to main menu", 
-                value: "return" 
-            }
-        ]}
-    ])
-// to add new role
-if( response.action == "add" ){
-    const dbDepartment = await db.query( "SELECT * FROM department")
-    department = []
-    dbDepartment.forEach( (item) => {
-        department.push( { name: item.name, value: item.id } )
-    })
-
-    response = await inquirer.prompt([
-        {   
-            message: "Enter new roole", 
-            type:"input", 
-            name:"name" 
-        },
-        {   
-            message: "Enter salary for new role", 
-            type:"input",   
-            name:"salary" 
-        },
-        {   
-            message: "Enter dept fornew role",
-            type:"list", 
-            name:"department",
-            choices: department},
-    ]) 
-
-    // to save to DB
-    let newRole = await db.query( "INSERT INTO role VALUES( ?, ?, ?, ?)", 
-    [ 0, response.name, response.salary, response.department ] )
-    
-    console.log( `Role ${response.name} has been added to database.`)
-    mainApp()
-}
-
-
-if( response.action=="return" ){
-    console.log( `Returning to the main menu...`)
-    mainApp()
-}
-}
-
-
-
-
-
-async function mainApp(){ 
-
-    let employeeList = await db.query( "SELECT * FROM employee" ) 
-    console.log ( employeeList ) 
-} 
-   //  table to join employee name 
-   if( response.action=="employee" ){
-    let employeeList = await db.query( 
-        "SELECT e.id," +
-        "CONCAT(e.first_name,' ',e.last_name) AS employeeName,"+
-        "CONCAT(m.first_name,' ',m.last_name) AS managerName,r.title,r.salary "+
-        "FROM employee AS e "+
-        "LEFT JOIN employee AS m ON(e.manager_id=m.id) "+
-        "LEFT JOIN role AS r ON(e.role_id=r.id)" )
-
-    console.table( employeeList ) 
-
-
-    response = await inquirer.prompt([
-        {       
-            message: "What do you want to do now?", 
-            type: "list", 
-            name: "action", 
-            choices: [
+                message:"What do you want to do now?", 
+                type:"list", 
+                name:"action", 
+            choices:[
                 {   
-                    name: "Update Employee Role", 
-                    value: "update" 
-                }, 
-                {   
-                    name: "Add Employee", 
+                    name: "Add a department", 
                     value: "add" 
                 },
                 {   
-                    name: "Return to the main menu", 
+                    name: "Return to main menu", 
                     value: "return" 
-                } 
-            ] 
-        }
-    ])        
-  
-    if( response.action=="update"){
-        let employeeNames = []
-        employeeList.forEach( (item) =>{
-            employeeNames.push( { name:item.employeeName, value:item.id } )
-        })
-
-        const dbRole = await db.query( "SELECT * FROM role")
-        role = []
-        dbRole.forEach( (item) => {
-            role.push( { name: item.title, value: item.id } )
-        })
-
-        response = await inquirer.prompt([
-            {   
-                
-            },
-            {  
-            },
+                }
+            ]}
         ])
 
-       let newRole = await db.query( "INSERT INTO role VALUES( ?, ?, ?, ?)", 
-    [ 0, response.name, response.salary, response.dept ] )
+        // to add new dept
+        if( response.action == "add" ){
+            response = await inquirer.prompt([
+                {   
+                    message: "Enter department name", 
+                    type:"input", 
+                    name:"createDep" 
+                }
+            ]) 
+
+            // to save to DB
+        
+            let newDep = await db.query( "INSERT INTO department VALUES( ?,? ) ", 
+            [ 0, response.createDep ] )
+            
+            console.log( `Department ${response.createDep} has been added to database.`)
+            mainApp()
+        }
+
+
+        if( response.action=="return" ){
+            console.log( `Returning to the main menu...`)
+            mainApp()
+        }
+    }
+
+    //  ROLE 
+    if( response.action=="role"){
     
-    console.log( `Role ${response.name} has been added to database.`)
-    mainApp()
+        let roleList = await db.query( "SELECT * FROM role" )
+        console.table( roleList )
+
+        response = await inquirer.prompt([
+            {   
+                message:"What do you want to do now?",  
+                type:"list", 
+                name:"action", 
+            choices:[
+                {   
+                     name: "Add a role", 
+                     value: "add" 
+                },
+                {   
+                    name: "Remove a role", 
+                    value: "remove" 
+                },
+                {   
+                    name: "Return to main menu", 
+                    value: "return" 
+                }
+            ]}
+        ])
+
+// to add new role
+        if( response.action == "add" ){
+            const dbDepartment = await db.query( "SELECT * FROM department")
+            department = []
+            dbDepartment.forEach( (item) => {
+                department.push( { name: item.name, value: item.id } )
+            })
+
+            response = await inquirer.prompt([
+                {   
+                    message: "Enter new role", 
+                    type:"input", 
+                    name:"name" 
+                },
+                {   
+                    message: "Enter salary for new role", 
+                    type:"input",   
+                    name:"salary" 
+                },
+                {   
+                    message: "Enter dept for new role",
+                    type:"list", 
+                    name:"department",
+                    choices: department     
+                },
+            ]) 
+
+            // to save to DB
+            let newRole = await db.query( "INSERT INTO role VALUES( ?, ?, ?, ?)", 
+            [ 0, response.name, response.salary, response.department ] )
+            
+            console.log( `Role ${response.name} has been added to database.`)
+            mainApp()
+        }
 
 
+        if( response.action=="return" ){
+            console.log( `Returning to the main menu...`)
+            mainApp()
+        }
+    }
+   
+// EMPLOYEE 
 
-// ADD EMPLOYEES
-    if( response.action=="add" ){
-        const dbRole = await db.query( "SELECT * FROM role")
-        role = []
-        dbRole.forEach( function( item ){
-            role.push( { name: item.title, value: item.id } )
-        })
-                    
+
+    //  table to join employee name 
+    if( response.action=="employee" ){
+        let employeeList = await db.query( 
+            "SELECT e.id," +
+            "CONCAT(e.first_name,' ',e.last_name) AS employeeName,"+
+            "CONCAT(m.first_name,' ',m.last_name) AS managerName,r.title,r.salary "+
+            "FROM employee AS e "+
+            "LEFT JOIN employee AS m ON(e.manager_id=m.id) "+
+            "LEFT JOIN role AS r ON(e.role_id=r.id)" )
+
+        console.table( employeeList ) 
+
+
         response = await inquirer.prompt([
             {       
-                message: "Enter employee  first name", 
-                type: "input", 
-                name: "first_name" 
-            },
-            {       
-                message: "Enter employee last name", 
-                type: "input", 
-                name: "last_name" 
-            },
-            {   
-                 message: "Enter employee role", 
-                 type: "list", 
-                 name: "role",
-                choices: role 
-            },
-            {   
-                 message: "Enter employee  manager", 
-                 type: "list", 
-                 name: "department",
-                choices: [ "no one"] 
-            }                    
-        ]) 
+                message: "What do you want to do now?", 
+                type: "list", 
+                name: "action", 
+                choices: [
+                    {   
+                        name: "Update Employee Role", 
+                        value: "update" 
+                    }, 
+                    {   
+                        name: "Add Employee", 
+                        value: "add" 
+                    },
+                    {   
+                        name: "Return to the main menu", 
+                        value: "return" 
+                    } 
+                ] 
+            }
+        ])        
+ 
 
-        //INSERT INTO employee VALUES( 0, "Employee2", "Lastname2", 1, 1 );
-        let saveResult = await db.query( "INSERT INTO employee VALUES( ?,?,?,?,? ) ", 
-                                        [ 0, response.first_name, response.last_name, response.role, 1 ] )
-        console.log( `Employee ${response.first_name + response.last_name} has been added to the database.` )
-        mainApp()
+        // *** to update employee*
+        if( response.action=="update"){
+            let employeeNames = []
+            employeeList.forEach( (item) =>{
+                employeeNames.push( { name:item.employeeName, value:item.id } )
+            })
 
+            const dbRole = await db.query( "SELECT * FROM role")
+            role = []
+            dbRole.forEach( (item) => {
+                role.push( { name: item.title, value: item.id } )
+            })
+
+            response = await inquirer.prompt([
+                {   
+                    message: "Select employee ", 
+                    type:"list", 
+                    name:"modifyEmployee",
+                    choices: employeeNames 
+                },
+                {   message: "Select role for employee", 
+                    type:"list", 
+                    name:"newRole",
+                    choices: role 
+                }
+            ])
+
+            let updateRole = await db.query( `UPDATE employee SET role_id=${response.newRole} WHERE id=${response.modifyEmployee} `)
+            console.log( `Update successful.`)
+            mainApp()
+        }
+
+ // ADD EMPLOYEES
+        if( response.action=="add" ){
+            const dbRole = await db.query( "SELECT * FROM role")
+            role = []
+            dbRole.forEach( function( item ){
+                role.push( { name: item.title, value: item.id } )
+            })
+                        
+            response = await inquirer.prompt([
+                {       
+                    message: "Enter employee  first name", 
+                    type: "input", 
+                    name: "first_name" 
+                },
+                {       
+                    message: "Enter employee last name", 
+                    type: "input", 
+                    name: "last_name" 
+                },
+                {   
+                     message: "Enter employee role", 
+                     type: "list", 
+                     name: "role",
+                    choices: role 
+                },
+                {   
+                     message: "Enter employee  manager", 
+                     type: "list", 
+                     name: "department",
+                    choices: [ "no one"] 
+                }                    
+            ]) 
+
+            let saveResult = await db.query( "INSERT INTO employee VALUES( ?,?,?,?,? ) ", 
+                                            [ 0, response.first_name, response.last_name, response.role, 1 ] )
+            console.log( `Employee ${response.first_name + response.last_name} has been added to the database.` )
+            mainApp()
+
+        }
+
+
+        if( response.action=="return" ){
+            console.log( `Returning to the main menu...`)
+            mainApp()
+        }
     }
-
-
-    if( response.action=="return" ){
-        console.log( `Returning to the main menu...`)
-        mainApp()
-    }
-}
 
 }
 mainApp()
