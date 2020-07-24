@@ -1,5 +1,6 @@
 require('dotenv').config()
 
+
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 
@@ -27,15 +28,33 @@ class Database {
   }
 }
 
+// const db = new Database ({
+//     host: "localhost", 
+//     port: 3306, 
+//     user: 'root',
+//     password: 'Batool12',
+//     database: 'employedata',
+//     insecureAuth : true
+// });    
+
 const db = new Database ({
     host: "localhost", 
-    port:3006, 
+    port: 3306, 
     user: process.env.DB_USER,
     password: process.env.DB_PWD,
     database: process.env.DB_NAME,
-    insecureAuth : true
-});   
+    insecureAuth : true 
+}); 
 
-console.log( db )
+
+async function mainApp(){
+    let employeeList = await db.query( "SELECT * FROM employee" ) 
+    console.log ( employeeList ) 
+} 
+
+// console.log( db )
+
+
+mainApp();
 
 
