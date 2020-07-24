@@ -313,6 +313,7 @@ async function mainApp(){
             type: "list",      
             name: "action", 
             choices: [ 
+<<<<<<< HEAD
                 {   
                     name: "Manage Departments",     
                     value: "department"     
@@ -320,6 +321,15 @@ async function mainApp(){
                 {   
                     name: "Manage Roles",   
                     value: "role"   
+=======
+                {
+                     name: "Manage Departments", 
+                     value: "department" 
+                    },
+                { 
+                    name: "Manage Role", 
+                    value: "role" 
+>>>>>>> parent of a475e68...  fixed typos
                 }, 
                 {   
                     name: "Manage Employees", 
@@ -375,11 +385,15 @@ async function mainApp(){
         //         { message: "Which department you want remove?", type:"input", name:"deleteDep" }
         //     ])
 
+<<<<<<< HEAD
         //     let deleteDep = await db.query( `DELETE FROM department WHERE name='${response.deleteDep}'` )
            
         //     console.log( `Department ${response.deleteDep} has been removed.`)
         //     mainApp()
         // }
+=======
+// ------------
+>>>>>>> parent of a475e68...  fixed typos
 
         if( response.action=="return" ){
             console.log( `Returning to the main menu...`)
@@ -387,13 +401,18 @@ async function mainApp(){
         }
     }
 
+<<<<<<< HEAD
     if( response.action=="role"){
     
+=======
+if( response.action=="role" ){
+>>>>>>> parent of a475e68...  fixed typos
         let roleList = await db.query( "SELECT * FROM role" )
         console.table( roleList )
 
         response = await inquirer.prompt([
             {   
+<<<<<<< HEAD
                 message:"What do you want to do now?",  
                 type:"list", 
                 name:"action", 
@@ -470,6 +489,59 @@ async function mainApp(){
             mainApp()
         }
     }
+=======
+                message:"What do you want to do now?", 
+                type:"list", 
+                name:"action", 
+            choices:[
+                { 
+                    name: "Add a role", 
+                    value: "add" },
+                { 
+                    name: "Return to main menu", 
+                    value: "return" }
+            ]}
+        ])    
+        // ADD ROLE 
+        if( response.action == "add" ){
+            const dbDepartment = await db.query( "SELECT * FROM department")
+            department = []
+            dbDepartment.forEach( (item) => {
+                department.push( { name: item.name, value: item.id } )
+            })
+
+            response = await inquirer.prompt([ 
+                {   
+                    message: "Enter new role name", 
+                    type:"input", 
+                    name:"name"
+                 },
+                {   
+                    message: "Enter salary for new role", 
+                    type:"input", 
+                    name:"salary" },
+                {   
+                    message: "Enter  department for new role",   
+                    type:"list", 
+                    name:"department",
+                    choices: department },
+            ])
+                
+    
+          // to save into DB 
+            let newRole = await db.query( "INSERT INTO role VALUES( ?, ?, ?, ?)", 
+            [ 0, response.name, response.salary, response.department ] )
+            
+            console.log( `Role ${response.name} has been added to database.`)
+            mainApp()
+        }      
+
+    } 
+    if( response.action=="return" ){
+        mainApp()
+    }
+} 
+>>>>>>> parent of a475e68...  fixed typos
 
     if( response.action=="employee" ){
         //Display employee info when choose to 'Manage Employee
@@ -481,7 +553,21 @@ async function mainApp(){
             "LEFT JOIN employee AS m ON(e.manager_id=m.id) "+
             "LEFT JOIN role AS r ON(e.role_id=r.id)" )
 
+<<<<<<< HEAD
         console.table( employeeList )
+=======
+
+ // EMPLOYEEE
+    // table join employee names 
+if( response.action=="employee" ){
+    let employeeList = await db.query( 
+        "SELECT CONCAT(e.first_name,' ',e.last_name) AS employeeName,"+
+        "CONCAT(m.first_name,' ',m.last_name) AS managerName,r.title,r.salary "+
+        "FROM employee AS e "+
+        "LEFT JOIN employee AS m ON(e.manager_id=m.id) "+
+        "LEFT JOIN role AS r ON(e.role_id=r.id)" )
+    console.table( employeeList )  
+>>>>>>> parent of a475e68...  fixed typos
 
         response = await inquirer.prompt([
             {       
@@ -507,6 +593,7 @@ async function mainApp(){
                     } 
                 ] 
             }
+<<<<<<< HEAD
         ])        
 
         if( response.action=="update"){
@@ -534,6 +621,12 @@ async function mainApp(){
                     choices: role 
                 }
             ])
+=======
+        ])   
+    
+         
+        console.log( response.action )   
+>>>>>>> parent of a475e68...  fixed typos
 
             let updateRole = await db.query( `UPDATE employee SET role_id=${response.newRole} WHERE id=${response.modifyEmployee} `)
             console.log( `Update successful.`)
@@ -603,5 +696,10 @@ async function mainApp(){
         }
     }
 
+<<<<<<< HEAD
 }
 mainApp()
+=======
+} 
+mainApp ()
+>>>>>>> parent of a475e68...  fixed typos
