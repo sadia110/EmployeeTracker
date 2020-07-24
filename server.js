@@ -72,9 +72,50 @@ async function mainApp(){
         }
     ])
 
-    console.log( response.action )  
+    console.log( response.action )    
+    
+    
 
-   
+    if( response.action=="department" ){
+        //Display department list
+        let departmentList = await db.query( "SELECT * FROM department" )
+        console.table( departmentList )
+
+        //Prompt user for further action for department info
+        response = await inquirer.prompt([
+            { message:"What do you want to do now?", type:"list", name:"action", 
+            choices:[
+                { name: "Add a department", value: "add" },
+                { name: "Remove a department", value: "remove" },
+                { name: "Return to main menu", value: "return" }
+            ]}
+        ])
+
+        //Add new department to database
+        if( response.action == "add" ){
+            response = await inquirer.prompt([
+                { message: "What is the name of new department?", type:"input", name:"createDep" }
+            ])
+        
+            let newDep = await db.query( "INSERT INTO department VALUES( ?,? ) ", 
+            [ 0, response.createDep ] )
+            
+            console.log( `Department ${response.createDep} has been added to database.`)
+            mainApp()
+        }
+
+
+
+    // table join employee names 
+ if( response.action=="employee" ){
+    let employeeList = await db.query( 
+        "SELECT CONCAT(e.first_name,' ',e.last_name) AS employeeName,"+
+        "CONCAT(m.first_name,' ',m.last_name) AS managerName,r.title,r.salary "+
+        "FROM employee AS e "+
+        "LEFT JOIN employee AS m ON(e.manager_id=m.id) "+
+        "LEFT JOIN role AS r ON(e.role_id=r.id)" )
+    console.table( employeeList )  
+
         response = await inquirer.prompt([ 
             {   
                 message: "What would you like to do next?",
@@ -97,11 +138,12 @@ async function mainApp(){
             }
         ])   
     
-        
-        console.log( response.action ) 
-    
+         
+        console.log( response.action )   
 
+ 
 
+// ADD EMPLOYEES
         if( response.action=="add" ){
             const dbRole = await db.query( "SELECT * FROM role")
             role = []
@@ -147,13 +189,8 @@ async function mainApp(){
         if( response.action=="return" ){
             mainApp()
         }
-    }
+    } 
 
-
-
-
-
-
-
-
-
+} 
+} 
+mainApp ()
